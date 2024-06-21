@@ -45,9 +45,15 @@ class Character {
 
 //Part 3
 class Adventurer extends Character {
+  static MAX_HEALTH = 100;
+  static ROLES = ["Fighter", "Healer", "Wizard"];
   constructor(name, role) {
     super(name);
-    this.role = role;
+    if (this.roleMatches(role)) {
+      this.role = role;
+    } else {
+      this.role = this.ROLES[0];
+    }
 
     this.inventory.push("bedroll", "50 gold coins");
   }
@@ -55,6 +61,17 @@ class Adventurer extends Character {
   scout() {
     console.log(`${this.name} is scouting ahead...`);
     super.roll();
+  }
+
+  roleMatches(role) {
+    const result = false;
+    this.ROLES.forEach((element) => {
+      if (element === role) {
+        result = true;
+      }
+    });
+
+    return result;
   }
 }
 
@@ -71,14 +88,39 @@ class Companion extends Character {
   }
 }
 
-const robin = new Adventurer("Robin", "Scout");
-robin.inventory = ["sword", "potion", "artifact"];
-robin.companion = new Companion("Leo");
-robin.companion.type = "Cat";
-robin.companion.companion = new Companion("Frank");
-robin.companion.companion.type = "Flea";
-robin.companion.companion.inventory = ["small hat", "sunglasses"];
+// const robin = new Adventurer("Robin", "Scout");
+// robin.inventory = ["sword", "potion", "artifact"];
+// robin.companion = new Companion("Leo");
+// robin.companion.type = "Cat";
+// robin.companion.companion = new Companion("Frank");
+// robin.companion.companion.type = "Flea";
+// robin.companion.companion.inventory = ["small hat", "sunglasses"];
 
-robin.scout();
-robin.companion.assist();
-robin.companion.companion.assist();
+// robin.scout();
+// robin.companion.assist();
+// robin.companion.companion.assist();
+
+//Part 5
+
+class AdventurerFactory {
+  constructor(role) {
+    this.role = role;
+    this.adventurers = [];
+  }
+
+  generate(name) {
+    const newAdventurer = new Adventurer(name, this.role);
+    this.adventurers.push(newAdventurer);
+  }
+
+  findByIndex(index) {
+    return this.adventurers[index];
+  }
+
+  findByName(name) {
+    return this.adventurers.find((a) => a.name === name);
+  }
+}
+
+const healers = new AdventurerFactory("Healer");
+const robin = healers.generate("Robin");
