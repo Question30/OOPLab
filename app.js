@@ -28,6 +28,7 @@ class Character {
   roll(mod = 0) {
     const result = Math.floor(Math.random() * 20) + 1 + mod;
     console.log(`${this.name} rolled a ${result}.`);
+    return result;
   }
 }
 
@@ -49,11 +50,11 @@ class Adventurer extends Character {
   static ROLES = ["Fighter", "Healer", "Wizard"];
   constructor(name, role) {
     super(name);
-    if (this.roleMatches(role)) {
-      this.role = role;
-    } else {
-      this.role = this.ROLES[0];
-    }
+    // if (this.roleMatches(role)) {
+    //   this.role = role;
+    // } else {
+    //   this.role = this.ROLES[0];
+    // }
 
     this.inventory.push("bedroll", "50 gold coins");
   }
@@ -61,6 +62,7 @@ class Adventurer extends Character {
   scout() {
     console.log(`${this.name} is scouting ahead...`);
     super.roll();
+    console.log(this.ROLES);
   }
 
   roleMatches(role) {
@@ -72,6 +74,24 @@ class Adventurer extends Character {
     });
 
     return result;
+  }
+
+  duel(adventurer) {
+    const myroll = super.roll();
+    const enemyroll = adventurer.roll();
+    if (myroll > enemyroll) {
+      adventurer.health -= 1;
+      console.log(
+        `${this.name} rolled higher than ${adventurer.name}, ${adventurer.name} loses 1 health point`
+      );
+      console.log(`${adventurer.name} health is now ${adventurer.health}`);
+    } else {
+      this.health -= 1;
+      console.log(
+        `${adventurer.name} rolled higher than ${this.name}, ${this.name} loses 1 health point`
+      );
+      console.log(`${this.name} health is now ${this.health}`);
+    }
   }
 }
 
@@ -124,3 +144,20 @@ class AdventurerFactory {
 
 const healers = new AdventurerFactory("Healer");
 const robin = healers.generate("Robin");
+
+const peter = healers.generate("Peter");
+
+function duelSim(adventurer1, adventurer2) {
+  while (adventurer1.health > 50 && adventurer2.health > 50) {
+    adventurer1.duel(adventurer2);
+  }
+
+  const winner =
+    adventurer1.health > adventurer2.health
+      ? adventurer1.name
+      : adventurer2.name;
+
+  return `${winner} is the winner`;
+}
+
+console.log(duelSim(healers.adventurers[0], healers.adventurers[1]));
